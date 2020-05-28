@@ -1,0 +1,9 @@
+#Visual Studio
+*.sln
+*.vcxproj
+*.filters
+*.user
+.vs/
+
+#Build Results
+x64/
