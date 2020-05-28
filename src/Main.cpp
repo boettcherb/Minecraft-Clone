@@ -11,6 +11,16 @@ static unsigned int g_scrWidth = 800;
 static unsigned int g_scrHeight = 600;
 const char* WINDOW_TITLE = "OpenGL Window";
 
+// This callback function executes whenever the user moves the mouse
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+
+}
+
+// This callback function executes whenever the user moves the mouse scroll wheel
+void scroll_callback(GLFWwindow* window, double /* offsetX */, double offsetY) {
+
+}
+
 // Called every frame inside the render loop
 static void processInput(GLFWwindow* window) {
     // if the escape key is pressed, tell the window to close
@@ -40,6 +50,8 @@ int main() {
         return -1;
     }
     glfwMakeContextCurrent(window);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // initialize GLAD
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
