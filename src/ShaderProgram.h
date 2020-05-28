@@ -13,7 +13,7 @@ class ShaderProgram {
 	};
 
 	unsigned int m_shaderProgramID;
-	std::vector<Shader> m_shaders;
+	std::vector<ShaderProgram::Shader> m_shaders;
 
 public:
 	ShaderProgram(const std::string& vertexFilePath, const std::string& fragmentFilePath);
