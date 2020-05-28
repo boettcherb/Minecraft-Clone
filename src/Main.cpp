@@ -1,3 +1,6 @@
+#include "ShaderProgram.h"
+#include "Mesh.h"
+
 #include <glad/glad.h>
 #include <GLFW/GLFW3.h>
 
@@ -40,13 +43,32 @@ int main() {
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
     std::cout << "Starting Application...\n";
 
+    // vertex buffer data
+    const float vData[] = {
+        -0.5f, -0.5f,  0.0f,
+         0.5f, -0.5f,  0.0f,
+        -0.5f,  0.5f,  0.0f,
+         0.5f,  0.5f,  0.0f,
+    };
+
+    // index buffer data
+    const unsigned int iData[] = {
+        0u, 1u, 3u,
+        0u, 3u, 2u,
+    };
+
+    ShaderProgram shader("res/shaders/basic_vertex.glsl", "res/shaders/basic_fragment.glsl");
+    Mesh mesh(vData, sizeof(vData), { 3 });
+    mesh.addSubmesh(iData, sizeof(iData) / sizeof(unsigned int), &shader);
+
     // set the clear color (background color)
     glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
 
     // render loop
     while (!glfwWindowShouldClose(window)) {
-        // clear the screen
         glClear(GL_COLOR_BUFFER_BIT);
+
+        mesh.render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
