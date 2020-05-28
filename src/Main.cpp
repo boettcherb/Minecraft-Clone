@@ -11,6 +11,14 @@ static unsigned int g_scrWidth = 800;
 static unsigned int g_scrHeight = 600;
 const char* WINDOW_TITLE = "OpenGL Window";
 
+// Called every frame inside the render loop
+static void processInput(GLFWwindow* window) {
+    // if the escape key is pressed, tell the window to close
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+}
+
 int main() {
     // initialize GLFW
     if (!glfwInit()) {
@@ -66,6 +74,7 @@ int main() {
 
     // render loop
     while (!glfwWindowShouldClose(window)) {
+        processInput(window);
         glClear(GL_COLOR_BUFFER_BIT);
 
         mesh.render();
