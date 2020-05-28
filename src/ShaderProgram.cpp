@@ -1,11 +1,14 @@
 #include "ShaderProgram.h"
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 ShaderProgram::Shader::Shader(unsigned int id, const std::string& source)
     : m_id{ id }, m_source{ source } {}
@@ -75,4 +78,42 @@ void ShaderProgram::bind() const {
 
 void ShaderProgram::unbind() const {
     glUseProgram(0);
+}
+
+void ShaderProgram::addUniform1f(const std::string& name, float v0) {
+    bind();
+    glUniform1f(getUniformLocation(name), v0);
+}
+
+void ShaderProgram::addUniform2f(const std::string& name, float v0, float v1) {
+    bind();
+    glUniform2f(getUniformLocation(name), v0, v1);
+}
+
+void ShaderProgram::addUniform3f(const std::string& name, float v0, float v1, float v2) {
+    bind();
+    glUniform3f(getUniformLocation(name), v0, v1, v2);
+}
+
+void ShaderProgram::addUniform4f(const std::string& name, float v0, float v1, float v2, float v3) {
+    bind();
+    glUniform4f(getUniformLocation(name), v0, v1, v2, v3);
+}
+
+void ShaderProgram::addUniformMat4f(const std::string& name, const glm::mat4& matrix) {
+    bind();
+    glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+int ShaderProgram::getUniformLocation(const std::string& name) {
+    auto cachedLocation = m_uniformLocationCache.find(name);
+    if (cachedLocation != m_uniformLocationCache.end()) {
+        return cachedLocation->second;
+    }
+    int location = glGetUniformLocation(m_shaderProgramID, name.c_str());
+    if (location == -1) {
+        std::cerr << "The Uniform " + name + " does not exist!\n";
+    }
+    m_uniformLocationCache[name] = location;
+    return location;
 }
