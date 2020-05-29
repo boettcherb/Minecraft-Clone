@@ -1,8 +1,10 @@
 #include "ShaderProgram.h"
 #include "Mesh.h"
+#include "Camera.h"
 
 #include <glad/glad.h>
 #include <GLFW/GLFW3.h>
+#include <glm/glm.hpp>
 
 #include <iostream>
 #include <string>
@@ -13,19 +15,40 @@ const char* WINDOW_TITLE = "OpenGL Window";
 
 // This callback function executes whenever the user moves the mouse
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-
+    Camera* camera = reinterpret_cast<Camera*>(glfwGetWindowUserPointer(window));
+    if (camera) {
+        camera->processMouseMovement(static_cast<float>(xpos), static_cast<float>(ypos));
+    }
 }
 
 // This callback function executes whenever the user moves the mouse scroll wheel
 void scroll_callback(GLFWwindow* window, double /* offsetX */, double offsetY) {
-
+    Camera* camera = reinterpret_cast<Camera*>(glfwGetWindowUserPointer(window));
+    if (camera) {
+        camera->processMouseScroll(static_cast<float>(offsetY));
+    }
 }
 
 // Called every frame inside the render loop
-static void processInput(GLFWwindow* window) {
+static void processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
     // if the escape key is pressed, tell the window to close
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+    
+    // WASD for the camera
+    const float cameraSpeed = 2.5f * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera->processKeyboard(Camera::FORWARD, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera->processKeyboard(Camera::BACKWARD, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camera->processKeyboard(Camera::LEFT, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera->processKeyboard(Camera::RIGHT, deltaTime);
     }
 }
 
@@ -59,9 +82,14 @@ int main() {
         glfwTerminate();
         return -1;
     }
-
+    
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
     std::cout << "Starting Application...\n";
+
+    // Set the camera object as the window's user pointer. This makes it accessible 
+    // in callback functions by using glfwGetWindowUserPointer().
+    Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
+    glfwSetWindowUserPointer(window, reinterpret_cast<void*>(&camera));
 
     // vertex buffer data
     const float vData[] = {
@@ -84,9 +112,18 @@ int main() {
     // set the clear color (background color)
     glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
 
+    // variables for deltaTime
+    double previousTime = glfwGetTime();
+    double deltaTime = 0.0f;
+
     // render loop
     while (!glfwWindowShouldClose(window)) {
-        processInput(window);
+        // calculate deltaTime and process input
+        double currentTime = glfwGetTime();
+        deltaTime = currentTime - previousTime;
+        previousTime = currentTime;
+        processInput(window, &camera, static_cast<float>(deltaTime));
+
         glClear(GL_COLOR_BUFFER_BIT);
 
         mesh.render();
