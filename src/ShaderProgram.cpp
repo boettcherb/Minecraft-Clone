@@ -1,4 +1,5 @@
 #include "ShaderProgram.h"
+#include "Texture.h"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -78,6 +79,22 @@ void ShaderProgram::bind() const {
 
 void ShaderProgram::unbind() const {
     glUseProgram(0);
+}
+
+void ShaderProgram::addTexture(const Texture* texture, const std::string& name) {
+    bind();
+    texture->bind();
+    addUniform1i(name, texture->getSlot());
+}
+
+void ShaderProgram::addUniform1i(const std::string& name, int v0) {
+    bind();
+    glUniform1i(getUniformLocation(name), v0);
+}
+
+void ShaderProgram::addUniform2i(const std::string& name, int v0, int v1) {
+    bind();
+    glUniform2i(getUniformLocation(name), v0, v1);
 }
 
 void ShaderProgram::addUniform1f(const std::string& name, float v0) {

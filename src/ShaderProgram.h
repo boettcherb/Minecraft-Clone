@@ -1,6 +1,8 @@
 #ifndef SHADER_PROGRAM_H_INCLUDED
 #define SHADER_PROGRAM_H_INCLUDED
 
+#include "Texture.h"
+
 #include <glm/glm.hpp>
 
 #include <string>
@@ -8,7 +10,7 @@
 #include <unordered_map>
 
 class ShaderProgram {
-
+	
 	struct Shader {
 		unsigned int m_id;
 		std::string m_source;
@@ -25,7 +27,10 @@ public:
 
 	void bind() const;
 	void unbind() const;
+	void addTexture(const Texture* texture, const std::string& name);
 
+	void addUniform1i(const std::string& name, int v0);
+	void addUniform2i(const std::string& name, int v0, int v1);
 	void addUniform1f(const std::string& name, float v0);
 	void addUniform2f(const std::string& name, float v0, float v1);
 	void addUniform3f(const std::string& name, float v0, float v1, float v2);
