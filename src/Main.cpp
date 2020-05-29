@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include <GLFW/GLFW3.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 #include <string>
@@ -93,16 +94,26 @@ int main() {
 
     // vertex buffer data
     const float vData[] = {
+        // front face
         -0.5f, -0.5f,  0.0f,
          0.5f, -0.5f,  0.0f,
         -0.5f,  0.5f,  0.0f,
          0.5f,  0.5f,  0.0f,
+         // back face
+        -0.5f, -0.5f, -1.0f,
+         0.5f, -0.5f, -1.0f,
+        -0.5f,  0.5f, -1.0f,
+         0.5f,  0.5f, -1.0f,
     };
 
     // index buffer data
     const unsigned int iData[] = {
-        0u, 1u, 3u,
-        0u, 3u, 2u,
+        0u, 1u, 3u, 0u, 3u, 2u, // front
+        4u, 0u, 2u, 4u, 2u, 6u, // left
+        1u, 5u, 7u, 1u, 7u, 3u, // right
+        4u, 5u, 1u, 4u, 1u, 0u, // bottom
+        2u, 3u, 7u, 1u, 7u, 6u, // top
+        5u, 4u, 6u, 5u, 6u, 7u, // back
     };
 
     ShaderProgram shader("res/shaders/basic_vertex.glsl", "res/shaders/basic_fragment.glsl");
@@ -125,6 +136,12 @@ int main() {
         processInput(window, &camera, static_cast<float>(deltaTime));
 
         glClear(GL_COLOR_BUFFER_BIT);
+
+        shader.addUniformMat4f("u_model", glm::mat4(1.0f));
+        shader.addUniformMat4f("u_view", camera.getViewMatrix());
+        float scrRatio = static_cast<float>(g_scrWidth) / static_cast<float>(g_scrHeight);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), scrRatio, 0.1f, 100.0f);
+        shader.addUniformMat4f("u_projection", projection);
 
         mesh.render();
 
