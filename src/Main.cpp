@@ -1,6 +1,7 @@
 #include "ShaderProgram.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "Texture.h"
 
 #include <glad/glad.h>
 #include <GLFW/GLFW3.h>
@@ -102,33 +103,53 @@ int main() {
     Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
     glfwSetWindowUserPointer(window, reinterpret_cast<void*>(&camera));
 
-    // vertex buffer data
-    const float vData[] = {
-        // front face
-        -0.5f, -0.5f,  0.0f,
-         0.5f, -0.5f,  0.0f,
-        -0.5f,  0.5f,  0.0f,
-         0.5f,  0.5f,  0.0f,
-         // back face
-        -0.5f, -0.5f, -1.0f,
-         0.5f, -0.5f, -1.0f,
-        -0.5f,  0.5f, -1.0f,
-         0.5f,  0.5f, -1.0f,
+    const float cubeData[] = {
+        // front
+       -0.5f, -0.5f,  0.5f,    0.0f, 0.0f,   0.0f, 15.0f,
+        0.5f, -0.5f,  0.5f,    1.0f, 0.0f,   0.0f, 15.0f,
+       -0.5f,  0.5f,  0.5f,    0.0f, 1.0f,   0.0f, 15.0f,
+        0.5f,  0.5f,  0.5f,    1.0f, 1.0f,   0.0f, 15.0f,
+        // left
+       -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,   0.0f, 15.0f,
+       -0.5f, -0.5f,  0.5f,    1.0f, 0.0f,   0.0f, 15.0f,
+       -0.5f,  0.5f, -0.5f,    0.0f, 1.0f,   0.0f, 15.0f,
+       -0.5f,  0.5f,  0.5f,    1.0f, 1.0f,   0.0f, 15.0f,
+        // right
+        0.5f, -0.5f,  0.5f,    0.0f, 0.0f,   0.0f, 15.0f,
+        0.5f, -0.5f, -0.5f,    1.0f, 0.0f,   0.0f, 15.0f,
+        0.5f,  0.5f,  0.5f,    0.0f, 1.0f,   0.0f, 15.0f,
+        0.5f,  0.5f, -0.5f,    1.0f, 1.0f,   0.0f, 15.0f,
+        // back
+        0.5f, -0.5f, -0.5f,    0.0f, 0.0f,   0.0f, 15.0f,
+       -0.5f, -0.5f, -0.5f,    1.0f, 0.0f,   0.0f, 15.0f,
+        0.5f,  0.5f, -0.5f,    0.0f, 1.0f,   0.0f, 15.0f,
+       -0.5f,  0.5f, -0.5f,    1.0f, 1.0f,   0.0f, 15.0f,
+        // top
+       -0.5f,  0.5f,  0.5f,    0.0f, 0.0f,   2.0f, 15.0f,
+        0.5f,  0.5f,  0.5f,    1.0f, 0.0f,   2.0f, 15.0f,
+       -0.5f,  0.5f, -0.5f,    0.0f, 1.0f,   2.0f, 15.0f,
+        0.5f,  0.5f, -0.5f,    1.0f, 1.0f,   2.0f, 15.0f,
+        // bottom
+       -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,   1.0f, 15.0f,
+        0.5f, -0.5f, -0.5f,    1.0f, 0.0f,   1.0f, 15.0f,
+       -0.5f, -0.5f,  0.5f,    0.0f, 1.0f,   1.0f, 15.0f,
+        0.5f, -0.5f,  0.5f,    1.0f, 1.0f,   1.0f, 15.0f,
     };
 
-    // index buffer data
-    const unsigned int iData[] = {
-        0u, 1u, 3u, 0u, 3u, 2u, // front
-        4u, 0u, 2u, 4u, 2u, 6u, // left
-        1u, 5u, 7u, 1u, 7u, 3u, // right
-        4u, 5u, 1u, 4u, 1u, 0u, // bottom
-        2u, 3u, 7u, 1u, 7u, 6u, // top
-        5u, 4u, 6u, 5u, 6u, 7u, // back
+    const unsigned int cubeIndices[] = {
+         0u,  3u,  2u,  0u,  1u,  3u,
+         4u,  7u,  6u,  4u,  5u,  7u,
+         8u, 11u, 10u,  8u,  9u, 11u,
+        12u, 15u, 14u, 12u, 13u, 15u,
+        16u, 19u, 18u, 16u, 17u, 19u,
+        20u, 23u, 22u, 20u, 21u, 23u,
     };
 
+    Texture textureSheet("res/textures/texture_sheet.png", 0);
     ShaderProgram shader("res/shaders/basic_vertex.glsl", "res/shaders/basic_fragment.glsl");
-    Mesh mesh(vData, sizeof(vData), { 3 });
-    mesh.addSubmesh(iData, sizeof(iData) / sizeof(unsigned int), &shader);
+    shader.addTexture(&textureSheet, "u_texture");
+    Mesh mesh(cubeData, sizeof(cubeData), { 3, 2, 2 });
+    mesh.addSubmesh(cubeIndices, sizeof(cubeIndices) / sizeof(unsigned int), &shader);
 
     // set the clear color (background color)
     glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
