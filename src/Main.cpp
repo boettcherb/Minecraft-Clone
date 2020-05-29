@@ -88,15 +88,15 @@ int main() {
 
     /////////////////////////////////////////////////////////////////////////////////
 
+    
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
+    std::cout << "Starting Application...\n";
 
     // tell GLFW to capture our mouse cursor
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // enable VSync (tie the FPS to your monitor's refresh rate)
     glfwSwapInterval(1);
-    
-    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
-    std::cout << "Starting Application...\n";
 
     // Set the camera object as the window's user pointer. This makes it accessible 
     // in callback functions by using glfwGetWindowUserPointer().
@@ -151,8 +151,8 @@ int main() {
     Mesh mesh(cubeData, sizeof(cubeData), { 3, 2, 2 });
     mesh.addSubmesh(cubeIndices, sizeof(cubeIndices) / sizeof(unsigned int), &shader);
 
-    // set the clear color (background color)
     glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
 
     // variables for deltaTime
     double previousTime = glfwGetTime();
@@ -160,13 +160,12 @@ int main() {
 
     // render loop
     while (!glfwWindowShouldClose(window)) {
-        // calculate deltaTime and process input
         double currentTime = glfwGetTime();
         deltaTime = currentTime - previousTime;
         previousTime = currentTime;
         processInput(window, &camera, static_cast<float>(deltaTime));
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader.addUniformMat4f("u_model", glm::mat4(1.0f));
         shader.addUniformMat4f("u_view", camera.getViewMatrix());
