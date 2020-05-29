@@ -84,8 +84,15 @@ int main() {
         return -1;
     }
 
+
+    /////////////////////////////////////////////////////////////////////////////////
+
+
     // tell GLFW to capture our mouse cursor
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    // enable VSync (tie the FPS to your monitor's refresh rate)
+    glfwSwapInterval(1);
     
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
     std::cout << "Starting Application...\n";
