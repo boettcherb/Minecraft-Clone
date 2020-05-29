@@ -83,6 +83,9 @@ int main() {
         glfwTerminate();
         return -1;
     }
+
+    // tell GLFW to capture our mouse cursor
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
     std::cout << "Starting Application...\n";
