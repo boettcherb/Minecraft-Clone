@@ -6,31 +6,24 @@
 #include <vector>
 
 class Mesh {
-
-	struct Submesh {
-		unsigned int m_vertexArrayID;
-		unsigned int m_indexBufferID;
-		unsigned int m_indexBufferCount;
-		const ShaderProgram* m_shader;
-		Submesh(unsigned int vao, unsigned int ibo, unsigned int count, const ShaderProgram* shader);
-	};
-
-	unsigned int m_vbID;
-	const void* m_vbData;
-	unsigned int m_vbSize;
-	std::vector<unsigned int> m_vbLayout;
-	std::vector<Mesh::Submesh> m_meshes;
+	unsigned int m_vertexArrayID;
+	unsigned int m_vertexBufferID;
+	unsigned int m_indexBufferID;
+	unsigned int m_indexBufferCount;
+	ShaderProgram const* m_shader;
 
 public:
-	Mesh(const void* data, unsigned int size, const std::vector<unsigned int>& layout);
+	Mesh(unsigned int vbSize, unsigned int ibCount, const std::vector<unsigned int>& layout);
 	~Mesh();
 
-	void addSubmesh(const void* ibData, unsigned int count, const ShaderProgram* shader);
-	void render() const;
+	void setVertexData(const void* data, unsigned int size);
+	void setIndexData(const void* data, unsigned int count);
+	void setShader(const ShaderProgram* shader);
+	void render(const ShaderProgram* shader = nullptr) const;
 
 private:
-	void setVertexBuffer() const;
-	unsigned int setIndexBuffer(const void* data, unsigned int count) const;
+	unsigned int setVertexBuffer(unsigned int size, const std::vector<unsigned int>& layout) const;
+	unsigned int setIndexBuffer(unsigned int count) const;
 };
 
 #endif
