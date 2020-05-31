@@ -1,7 +1,6 @@
 #ifndef BLOCK_TYPE_H_INCLUDED
 #define BLOCK_TYPE_H_INCLUDED
 
-#include <cinttypes>
 #include <vector>
 
 namespace Block {
