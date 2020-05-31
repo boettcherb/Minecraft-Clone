@@ -39,7 +39,7 @@ static void processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
-    
+
     // WASD for the camera
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera->processKeyboard(Camera::FORWARD, deltaTime);
@@ -89,7 +89,7 @@ int main() {
 
     /////////////////////////////////////////////////////////////////////////////////
 
-    
+
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
     std::cout << "Starting Application...\n";
 
@@ -139,10 +139,16 @@ int main() {
 
         mesh.render();
 
+        // catch errors
+        GLenum err;
+        while ((err = glGetError()) != GL_NO_ERROR) {
+            std::cout << "Error: " << err << '\n';
+        }
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    
+
     glfwTerminate();
     return 0;
 }
