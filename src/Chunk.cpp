@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-Chunk::Chunk(int x, int y, int z) : m_posX{ x }, m_posY{ y }, m_posZ{ z }, m_numFacesToDraw{ 0 } {
+Chunk::Chunk(int x, int y, int z) : m_posX{ x }, m_posY{ y }, m_posZ{ z }, m_numFacesToDraw{ 0 }, m_updated{ true } {
 	for (int i = 0; i < CHUNK_LENGTH; ++i) {
 		for (int j = 0; j < CHUNK_HEIGHT; ++j) {
 			for (int k = 0; k < CHUNK_WIDTH; ++k) {
@@ -51,6 +51,9 @@ unsigned int Chunk::getVertexData(float* data) {
 			}
 		}
 	}
+	// all updates to vertex data were just processed
+	m_updated = false;
+
 	// calculate the number of faces drawn based on the initial start 
 	// of the array and the new start of the arary
 	m_numFacesToDraw = static_cast<unsigned int>(data - start) / Block::FLOATS_PER_FACE;
@@ -84,4 +87,8 @@ unsigned int Chunk::getIndexData(unsigned int* data) {
 		data[i] = data[i - Block::INDICES_PER_FACE] + Block::VERTICES_PER_FACE;
 	}
 	return numIndices;
+}
+
+bool Chunk::updated() const {
+	return m_updated;
 }
