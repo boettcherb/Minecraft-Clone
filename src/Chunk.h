@@ -12,14 +12,12 @@ class Chunk {
 
 	const int m_posX, m_posY, m_posZ;
 	Block::BlockType m_blocks[CHUNK_LENGTH][CHUNK_WIDTH][CHUNK_HEIGHT];
-	unsigned int m_numFacesToDraw;
 	bool m_updated;
 
 public:
 	Chunk(int x, int y, int z);
 
 	unsigned int getVertexData(unsigned int* data);
-	unsigned int getIndexData(unsigned int* data);
 	bool updated() const;
 
 private:

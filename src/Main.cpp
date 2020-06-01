@@ -121,9 +121,9 @@ int main() {
     Texture textureSheet("res/textures/texture_sheet.png", 0);
     shader.addTexture(&textureSheet, "u_texture");
     Chunk chunk(0, 0, 0);
-    const unsigned int VERTEX_DATA_COUNT = BLOCKS_PER_CHUNK * 120;
-    const unsigned int INDEX_DATA_COUNT = BLOCKS_PER_CHUNK * 36;
-    Mesh mesh(VERTEX_DATA_COUNT * 4, INDEX_DATA_COUNT, Block::VERTEX_BUFFER_LAYOUT);
+    const unsigned int MAX_VERTEX_COUNT = BLOCKS_PER_CHUNK * 36;
+    Mesh mesh(MAX_VERTEX_COUNT * sizeof(unsigned int));
+    mesh.setShader(&shader);
 
     glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -149,15 +149,12 @@ int main() {
         shader.addUniformMat4f("u_projection", projection);
 
         if (chunk.updated()) {
-            unsigned int vbData[VERTEX_DATA_COUNT];
+            unsigned int vbData[MAX_VERTEX_COUNT];
             unsigned int size = chunk.getVertexData(vbData);
             mesh.setVertexData(vbData, size);
-            unsigned int ibData[INDEX_DATA_COUNT];
-            unsigned int count = chunk.getIndexData(ibData);
-            mesh.setIndexData(ibData, count);
         }
 
-        mesh.render(&shader);
+        mesh.render();
 
         // catch errors
         GLenum err;
