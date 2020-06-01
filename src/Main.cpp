@@ -101,19 +101,16 @@ int main() {
 
     // Set the camera object as the window's user pointer. This makes it accessible 
     // in callback functions by using glfwGetWindowUserPointer().
-    Camera camera(glm::vec3(4.0f, 3.0f, 10.0f));
+    Camera camera(glm::vec3(0.5f, 0.5f, 3.0f));
     glfwSetWindowUserPointer(window, reinterpret_cast<void*>(&camera));
 
     ShaderProgram shader("res/shaders/basic_vertex.glsl", "res/shaders/basic_fragment.glsl");
     Texture textureSheet("res/textures/texture_sheet.png", 0);
     shader.addTexture(&textureSheet, "u_texture");
     Chunk chunk(0, 0, 0);
-    float vbData[BLOCKS_PER_CHUNK * 2 * 20];
-    unsigned int size = chunk.getVertexData(vbData);
-    Mesh mesh(vbData, size, Block::VERTEX_BUFFER_LAYOUT);
-    unsigned int ibData[BLOCKS_PER_CHUNK * 2 * 6];
-    unsigned int count = chunk.getIndexData(ibData);
-    mesh.addSubmesh(ibData, count, &shader);
+    const unsigned int VERTEX_DATA_COUNT = BLOCKS_PER_CHUNK * 120;
+    const unsigned int INDEX_DATA_COUNT = BLOCKS_PER_CHUNK * 36;
+    Mesh mesh(VERTEX_DATA_COUNT * 4, INDEX_DATA_COUNT, Block::VERTEX_BUFFER_LAYOUT);
 
     glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -137,7 +134,17 @@ int main() {
         glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), scrRatio, 0.1f, 100.0f);
         shader.addUniformMat4f("u_projection", projection);
 
-        mesh.render();
+        if (chunk.updated()) {
+            float vbData[VERTEX_DATA_COUNT];
+            unsigned int size = chunk.getVertexData(vbData);
+            mesh.setVertexData(vbData, size);
+
+            unsigned int ibData[INDEX_DATA_COUNT];
+            unsigned int count = chunk.getIndexData(ibData);
+            mesh.setIndexData(ibData, count);
+        }
+
+        mesh.render(&shader);
 
         // catch errors
         GLenum err;
