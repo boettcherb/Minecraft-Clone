@@ -55,6 +55,19 @@ static void processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
     }
 }
 
+// print the FPS to the screen every second
+static void displayFPS() {
+    static int FPS = 0;
+    static double previousTime = glfwGetTime();
+    double currentTime = glfwGetTime();
+    ++FPS;
+    if (currentTime - previousTime >= 1.0) {
+        std::cout << "FPS: " << FPS << '\n';
+        FPS = 0;
+        previousTime = currentTime;
+    }
+}
+
 int main() {
     // initialize GLFW
     if (!glfwInit()) {
@@ -121,6 +134,7 @@ int main() {
 
     // render loop
     while (!glfwWindowShouldClose(window)) {
+        displayFPS();
         double currentTime = glfwGetTime();
         deltaTime = currentTime - previousTime;
         previousTime = currentTime;
