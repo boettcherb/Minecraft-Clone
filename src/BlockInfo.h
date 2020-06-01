@@ -8,11 +8,11 @@ namespace Block {
     inline constexpr unsigned int FACES_PER_BLOCK = 6;
     inline constexpr unsigned int VERTICES_PER_FACE = 4;
     inline constexpr unsigned int VERTICES_PER_BLOCK = VERTICES_PER_FACE * FACES_PER_BLOCK;
-    inline constexpr unsigned int UINTS_PER_VERTEX = 5;
+    inline constexpr unsigned int UINTS_PER_VERTEX = 1;
     inline constexpr unsigned int UINTS_PER_FACE = VERTICES_PER_FACE * UINTS_PER_VERTEX;
     inline constexpr unsigned int BYTES_PER_FACE = UINTS_PER_FACE * sizeof(float);
     inline constexpr unsigned int INDICES_PER_FACE = 6;
-    inline const std::vector<unsigned int> VERTEX_BUFFER_LAYOUT = { 3, 2 };
+    inline const std::vector<unsigned int> VERTEX_BUFFER_LAYOUT = { 1 };
 
 	enum BlockType : unsigned char {
 		AIR,
@@ -37,36 +37,36 @@ namespace Block {
     };
 
     inline constexpr unsigned int GRASS_BLOCK_DATA[] = {
-        // right (+x)
-        1u, 0u, 1u,    0u, 15u,
-        1u, 0u, 0u,    1u, 15u,
-        1u, 1u, 1u,    0u, 16u,
-        1u, 1u, 0u,    1u, 16u,
-        // left (-x)
-        0u, 0u, 0u,    0u, 15u,
-        0u, 0u, 1u,    1u, 15u,
-        0u, 1u, 0u,    0u, 16u,
-        0u, 1u, 1u,    1u, 16u,
-        // top (+y)
-        0u, 1u, 1u,    2u, 15u,
-        1u, 1u, 1u,    3u, 15u,
-        0u, 1u, 0u,    2u, 16u,
-        1u, 1u, 0u,    3u, 16u,
-        // bottom (-y)
-        0u, 0u, 0u,    1u, 15u,
-        1u, 0u, 0u,    2u, 15u,
-        0u, 0u, 1u,    1u, 16u,
-        1u, 0u, 1u,    2u, 16u,
-        // front (+z)
-        0u, 0u, 1u,    0u, 15u,
-        1u, 0u, 1u,    1u, 15u,
-        0u, 1u, 1u,    0u, 16u,
-        1u, 1u, 1u,    1u, 16u,
-        // back (-z)
-        1u, 0u, 0u,    0u, 15u,
-        0u, 0u, 0u,    1u, 15u,
-        1u, 1u, 0u,    0u, 16u,
-        0u, 1u, 0u,    1u, 16u,
+        //posX  posY  posZ  texX  texY
+        0b00001'00000'00001'00000'01111, // right (+x)
+        0b00001'00000'00000'00001'01111, 
+        0b00001'00001'00001'00000'10000, 
+        0b00001'00001'00000'00001'10000, 
+
+        0b00000'00000'00000'00000'01111, // left (-x)
+        0b00000'00000'00001'00001'01111, 
+        0b00000'00001'00000'00000'10000, 
+        0b00000'00001'00001'00001'10000, 
+
+        0b00000'00001'00001'00010'01111, // top (+y)
+        0b00001'00001'00001'00011'01111, 
+        0b00000'00001'00000'00010'10000, 
+        0b00001'00001'00000'00011'10000, 
+
+        0b00000'00000'00000'00001'01111, // bottom (-y)
+        0b00001'00000'00000'00010'01111, 
+        0b00000'00000'00001'00001'10000, 
+        0b00001'00000'00001'00010'10000, 
+
+        0b00000'00000'00001'00000'01111, // front (+z)
+        0b00001'00000'00001'00001'01111, 
+        0b00000'00001'00001'00000'10000, 
+        0b00001'00001'00001'00001'10000, 
+
+        0b00001'00000'00000'00000'01111, // back (-z)
+        0b00000'00000'00000'00001'01111,
+        0b00001'00001'00000'00000'10000,
+        0b00000'00001'00000'00001'10000,
     };
 
     /*
