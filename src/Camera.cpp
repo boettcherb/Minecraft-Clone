@@ -8,7 +8,7 @@
 const glm::vec3 WORLD_UP = glm::vec3(0.0f, 1.0f, 0.0f);
 const float DEFAULT_YAW = -90.0f;
 const float DEFAULT_PITCH = 0.0f;
-const float DEFAULT_SPEED = 2.5f;
+const float DEFAULT_SPEED = 10.0f;
 const float DEFAULT_SENSITIVITY = 0.1f;
 const float DEFAULT_ZOOM = 45.0f;
 
