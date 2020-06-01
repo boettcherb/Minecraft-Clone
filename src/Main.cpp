@@ -1,5 +1,4 @@
 #include "ShaderProgram.h"
-#include "Mesh.h"
 #include "Camera.h"
 #include "Texture.h"
 #include "BlockInfo.h"
@@ -12,6 +11,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <new>
 
 static unsigned int g_scrWidth = 800;
 static unsigned int g_scrHeight = 600;
@@ -120,10 +121,14 @@ int main() {
     ShaderProgram shader("res/shaders/basic_vertex.glsl", "res/shaders/basic_fragment.glsl");
     Texture textureSheet("res/textures/texture_sheet.png", 0);
     shader.addTexture(&textureSheet, "u_texture");
-    Chunk chunk(0, 0, 0);
+
     const unsigned int MAX_VERTEX_COUNT = BLOCKS_PER_CHUNK * 36;
-    Mesh mesh(MAX_VERTEX_COUNT * sizeof(unsigned int));
-    mesh.setShader(&shader);
+    std::vector<Chunk*> chunks;
+    for (int x = 0; x < 10; ++x) {
+        for (int z = 0; z < 10; ++z) {
+            chunks.emplace_back(new Chunk(static_cast<float>(x), 0.0f, static_cast<float>(z), &shader));
+        }
+    }
 
     glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
     glEnable(GL_DEPTH_TEST);
@@ -142,19 +147,10 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader.addUniformMat4f("u_model", glm::mat4(1.0f));
-        shader.addUniformMat4f("u_view", camera.getViewMatrix());
-        float scrRatio = static_cast<float>(g_scrWidth) / static_cast<float>(g_scrHeight);
-        glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), scrRatio, 0.1f, 100.0f);
-        shader.addUniformMat4f("u_projection", projection);
-
-        if (chunk.updated()) {
-            unsigned int vbData[MAX_VERTEX_COUNT];
-            unsigned int size = chunk.getVertexData(vbData);
-            mesh.setVertexData(vbData, size);
+        float scrRatio = static_cast<float>(g_scrWidth) / g_scrHeight;
+        for (Chunk* chunk : chunks) {
+            chunk->render(&camera, scrRatio);
         }
-
-        mesh.render();
 
         // catch errors
         GLenum err;
@@ -166,6 +162,10 @@ int main() {
         glfwPollEvents();
     }
 
+    for (Chunk* chunk : chunks) {
+        delete chunk;
+    }
+    chunks.clear();
     glfwTerminate();
     return 0;
 }

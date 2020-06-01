@@ -6,9 +6,9 @@
 #include "Mesh.h"
 #include "Camera.h"
 
-inline constexpr int CHUNK_LENGTH = 8; // x
-inline constexpr int CHUNK_HEIGHT = 8; // y
-inline constexpr int CHUNK_WIDTH = 8;  // z
+inline constexpr int CHUNK_LENGTH = 16; // x
+inline constexpr int CHUNK_HEIGHT = 16; // y
+inline constexpr int CHUNK_WIDTH =  16; // z
 inline const unsigned int BLOCKS_PER_CHUNK = CHUNK_LENGTH * CHUNK_HEIGHT * CHUNK_WIDTH;
 
 class Chunk {
