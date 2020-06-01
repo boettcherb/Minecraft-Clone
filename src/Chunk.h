@@ -18,12 +18,12 @@ class Chunk {
 public:
 	Chunk(int x, int y, int z);
 
-	unsigned int getVertexData(float* data);
+	unsigned int getVertexData(unsigned int* data);
 	unsigned int getIndexData(unsigned int* data);
 	bool updated() const;
 
 private:
-	inline void setBlockFaceData(float* data, int x, int y, int z, Block::BlockFace face) const;
+	inline void setBlockFaceData(unsigned int* data, int x, int y, int z, Block::BlockFace face) const;
 };
 
 #endif

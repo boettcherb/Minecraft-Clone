@@ -33,7 +33,7 @@ unsigned int Mesh::setVertexBuffer(unsigned int size, const std::vector<unsigned
 
     // calculate the number of bytes of each vertex
     // std::accumulate sums up the values in the vertex buffer layout
-    int stride = std::accumulate(layout.begin(), layout.end(), 0) * sizeof(float);
+    int stride = std::accumulate(layout.begin(), layout.end(), 0) * sizeof(unsigned int);
 
     // tell openGL the layout of our vertex data.
     unsigned long long offset = 0;
@@ -42,8 +42,8 @@ unsigned int Mesh::setVertexBuffer(unsigned int size, const std::vector<unsigned
         // offset is the number of bytes from the start of the data, but OpenGL
         // reads this information in as a const void pointer
         const void* offsetPtr = reinterpret_cast<const void*>(offset);
-        glVertexAttribPointer(i, layout[i], GL_FLOAT, false, stride, offsetPtr);
-        offset += layout[i] * sizeof(float);
+        glVertexAttribIPointer(i, layout[i], GL_UNSIGNED_INT, stride, offsetPtr);
+        offset += layout[i] * sizeof(unsigned int);
     }
     return vertexBufferID;
 }

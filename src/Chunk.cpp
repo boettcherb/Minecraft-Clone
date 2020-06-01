@@ -13,8 +13,8 @@ Chunk::Chunk(int x, int y, int z) : m_posX{ x }, m_posY{ y }, m_posZ{ z }, m_num
 	}
 }
 
-unsigned int Chunk::getVertexData(float* data) {
-	float* start = data;
+unsigned int Chunk::getVertexData(unsigned int* data) {
+	unsigned int* start = data;
 	for (int x = 0; x < CHUNK_LENGTH; ++x) {
 		for (int y = 0; y < CHUNK_HEIGHT; ++y) {
 			for (int z = 0; z < CHUNK_WIDTH; ++z) {
@@ -24,29 +24,29 @@ unsigned int Chunk::getVertexData(float* data) {
 				}
 				// check each of the six sides to see if this block is adjacent to air
 				// only draw if this block is next to air or the edge of the chunk
-				if (x == 0 || m_blocks[x - 1][y][z] == Block::AIR) {
-					setBlockFaceData(data, x, y, z, Block::MINUS_X);
-					data += Block::FLOATS_PER_FACE;
-				}
-				if (y == 0 || m_blocks[x][y - 1][z] == Block::AIR) {
-					setBlockFaceData(data, x, y, z, Block::MINUS_Y);
-					data += Block::FLOATS_PER_FACE;
-				}
-				if (z == 0 || m_blocks[x][y][z - 1] == Block::AIR) {
-					setBlockFaceData(data, x, y, z, Block::MINUS_Z);
-					data += Block::FLOATS_PER_FACE;
-				}
 				if (x == CHUNK_LENGTH - 1 || m_blocks[x + 1][y][z] == Block::AIR) {
 					setBlockFaceData(data, x, y, z, Block::PLUS_X);
-					data += Block::FLOATS_PER_FACE;
+					data += Block::UINTS_PER_FACE;
+				}
+				if (x == 0 || m_blocks[x - 1][y][z] == Block::AIR) {
+					setBlockFaceData(data, x, y, z, Block::MINUS_X);
+					data += Block::UINTS_PER_FACE;
 				}
 				if (y == CHUNK_HEIGHT - 1 || m_blocks[x][y + 1][z] == Block::AIR) {
 					setBlockFaceData(data, x, y, z, Block::PLUS_Y);
-					data += Block::FLOATS_PER_FACE;
+					data += Block::UINTS_PER_FACE;
+				}
+				if (y == 0 || m_blocks[x][y - 1][z] == Block::AIR) {
+					setBlockFaceData(data, x, y, z, Block::MINUS_Y);
+					data += Block::UINTS_PER_FACE;
 				}
 				if (z == CHUNK_WIDTH - 1 || m_blocks[x][y][z + 1] == Block::AIR) {
 					setBlockFaceData(data, x, y, z, Block::PLUS_Z);
-					data += Block::FLOATS_PER_FACE;
+					data += Block::UINTS_PER_FACE;
+				}
+				if (z == 0 || m_blocks[x][y][z - 1] == Block::AIR) {
+					setBlockFaceData(data, x, y, z, Block::MINUS_Z);
+					data += Block::UINTS_PER_FACE;
 				}
 			}
 		}
@@ -56,16 +56,16 @@ unsigned int Chunk::getVertexData(float* data) {
 
 	// calculate the number of faces drawn based on the initial start 
 	// of the array and the new start of the arary
-	m_numFacesToDraw = static_cast<unsigned int>(data - start) / Block::FLOATS_PER_FACE;
+	m_numFacesToDraw = static_cast<unsigned int>(data - start) / Block::UINTS_PER_FACE;
 
 	// return the number of bytes that were initialized
 	return m_numFacesToDraw * Block::BYTES_PER_FACE;
 }
 
-inline void Chunk::setBlockFaceData(float* data, int x, int y, int z, Block::BlockFace face) const {
-	const float* blockData = Block::getData(m_blocks[x][y][z], face);
+inline void Chunk::setBlockFaceData(unsigned int* data, int x, int y, int z, Block::BlockFace face) const {
+	const unsigned int* blockData = Block::getData(m_blocks[x][y][z], face);
 	for (unsigned int vertex = 0; vertex < Block::VERTICES_PER_FACE; ++vertex) {
-		int index = vertex * Block::FLOATS_PER_VERTEX;
+		int index = vertex * Block::UINTS_PER_VERTEX;
 		data[index] = blockData[index] + x + m_posX;
 		data[index + 1] = blockData[index + 1] + y + m_posY;
 		data[index + 2] = blockData[index + 2] + z + m_posZ;

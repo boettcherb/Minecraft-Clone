@@ -4,8 +4,8 @@
 
 namespace Block {
 
-    const float* getData(BlockType type, BlockFace face) {
-        int offset = FLOATS_PER_FACE * face;
+    const unsigned int* getData(BlockType type, BlockFace face) {
+        int offset = UINTS_PER_FACE * face;
         switch (type) {
             case GRASS: return GRASS_BLOCK_DATA + offset;
             // case DIRT:  return DIRT_BLOCK_DATA + offset;

@@ -135,10 +135,9 @@ int main() {
         shader.addUniformMat4f("u_projection", projection);
 
         if (chunk.updated()) {
-            float vbData[VERTEX_DATA_COUNT];
+            unsigned int vbData[VERTEX_DATA_COUNT];
             unsigned int size = chunk.getVertexData(vbData);
             mesh.setVertexData(vbData, size);
-
             unsigned int ibData[INDEX_DATA_COUNT];
             unsigned int count = chunk.getIndexData(ibData);
             mesh.setIndexData(ibData, count);

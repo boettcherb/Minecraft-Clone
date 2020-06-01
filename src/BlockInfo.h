@@ -8,9 +8,9 @@ namespace Block {
     inline constexpr unsigned int FACES_PER_BLOCK = 6;
     inline constexpr unsigned int VERTICES_PER_FACE = 4;
     inline constexpr unsigned int VERTICES_PER_BLOCK = VERTICES_PER_FACE * FACES_PER_BLOCK;
-    inline constexpr unsigned int FLOATS_PER_VERTEX = 5;
-    inline constexpr unsigned int FLOATS_PER_FACE = VERTICES_PER_FACE * FLOATS_PER_VERTEX;
-    inline constexpr unsigned int BYTES_PER_FACE = FLOATS_PER_FACE * sizeof(float);
+    inline constexpr unsigned int UINTS_PER_VERTEX = 5;
+    inline constexpr unsigned int UINTS_PER_FACE = VERTICES_PER_FACE * UINTS_PER_VERTEX;
+    inline constexpr unsigned int BYTES_PER_FACE = UINTS_PER_FACE * sizeof(float);
     inline constexpr unsigned int INDICES_PER_FACE = 6;
     inline const std::vector<unsigned int> VERTEX_BUFFER_LAYOUT = { 3, 2 };
 
@@ -30,43 +30,43 @@ namespace Block {
         MINUS_Z,
     };
 
-    const float* getData(Block::BlockType type, Block::BlockFace face);
+    const unsigned int* getData(Block::BlockType type, Block::BlockFace face);
 
     inline constexpr unsigned int FACE_INDICES[] = {
          0u, 1u, 3u, 3u, 2u, 0u,
     };
 
-    inline constexpr float GRASS_BLOCK_DATA[] = {
+    inline constexpr unsigned int GRASS_BLOCK_DATA[] = {
         // right (+x)
-        1.0f, 0.0f, 1.0f,    0.0f, 15.0f,
-        1.0f, 0.0f, 0.0f,    1.0f, 15.0f,
-        1.0f, 1.0f, 1.0f,    0.0f, 16.0f,
-        1.0f, 1.0f, 0.0f,    1.0f, 16.0f,
+        1u, 0u, 1u,    0u, 15u,
+        1u, 0u, 0u,    1u, 15u,
+        1u, 1u, 1u,    0u, 16u,
+        1u, 1u, 0u,    1u, 16u,
         // left (-x)
-        0.0f, 0.0f, 0.0f,    0.0f, 15.0f,
-        0.0f, 0.0f, 1.0f,    1.0f, 15.0f,
-        0.0f, 1.0f, 0.0f,    0.0f, 16.0f,
-        0.0f, 1.0f, 1.0f,    1.0f, 16.0f,
+        0u, 0u, 0u,    0u, 15u,
+        0u, 0u, 1u,    1u, 15u,
+        0u, 1u, 0u,    0u, 16u,
+        0u, 1u, 1u,    1u, 16u,
         // top (+y)
-        0.0f, 1.0f, 1.0f,    2.0f, 15.0f,
-        1.0f, 1.0f, 1.0f,    3.0f, 15.0f,
-        0.0f, 1.0f, 0.0f,    2.0f, 16.0f,
-        1.0f, 1.0f, 0.0f,    3.0f, 16.0f,
+        0u, 1u, 1u,    2u, 15u,
+        1u, 1u, 1u,    3u, 15u,
+        0u, 1u, 0u,    2u, 16u,
+        1u, 1u, 0u,    3u, 16u,
         // bottom (-y)
-        0.0f, 0.0f, 0.0f,    1.0f, 15.0f,
-        1.0f, 0.0f, 0.0f,    2.0f, 15.0f,
-        0.0f, 0.0f, 1.0f,    1.0f, 16.0f,
-        1.0f, 0.0f, 1.0f,    2.0f, 16.0f,
+        0u, 0u, 0u,    1u, 15u,
+        1u, 0u, 0u,    2u, 15u,
+        0u, 0u, 1u,    1u, 16u,
+        1u, 0u, 1u,    2u, 16u,
         // front (+z)
-        0.0f, 0.0f, 1.0f,    0.0f, 15.0f,
-        1.0f, 0.0f, 1.0f,    1.0f, 15.0f,
-        0.0f, 1.0f, 1.0f,    0.0f, 16.0f,
-        1.0f, 1.0f, 1.0f,    1.0f, 16.0f,
+        0u, 0u, 1u,    0u, 15u,
+        1u, 0u, 1u,    1u, 15u,
+        0u, 1u, 1u,    0u, 16u,
+        1u, 1u, 1u,    1u, 16u,
         // back (-z)
-        1.0f, 0.0f, 0.0f,    0.0f, 15.0f,
-        0.0f, 0.0f, 0.0f,    1.0f, 15.0f,
-        1.0f, 1.0f, 0.0f,    0.0f, 16.0f,
-        0.0f, 1.0f, 0.0f,    1.0f, 16.0f,
+        1u, 0u, 0u,    0u, 15u,
+        0u, 0u, 0u,    1u, 15u,
+        1u, 1u, 0u,    0u, 16u,
+        0u, 1u, 0u,    1u, 16u,
     };
 
     /*
