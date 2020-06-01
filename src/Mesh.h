@@ -3,19 +3,19 @@
 
 #include "ShaderProgram.h"
 
+#include <glm/glm.hpp>
+
 class Mesh {
 	unsigned int m_vertexArrayID;
 	unsigned int m_vertexBufferID;
 	unsigned int m_vertexCount;
-	ShaderProgram const* m_shader;
 
 public:
 	Mesh(unsigned int vbSize);
 	~Mesh();
 
 	void setVertexData(const void* data, unsigned int size);
-	void setShader(const ShaderProgram* shader);
-	void render(const ShaderProgram* shader = nullptr) const;
+	void render(const ShaderProgram* shader) const;
 
 private:
 	unsigned int setVertexBuffer(unsigned int size) const;

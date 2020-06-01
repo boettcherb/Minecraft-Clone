@@ -1,7 +1,17 @@
 #include "Chunk.h"
 #include "BlockInfo.h"
+#include "ShaderProgram.h"
+#include "Camera.h"
+#include "Mesh.h"
 
-Chunk::Chunk(int x, int y, int z) : m_posX{ x }, m_posY{ y }, m_posZ{ z }, m_updated{ true } {
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <new>
+
+Chunk::Chunk(float x, float y, float z, ShaderProgram* shader) : m_posX{ x }, m_posY{ y }, 
+m_posZ{ z }, m_shader{ shader }, m_updated{ true }, m_blocks{ Block::AIR } {
+	m_mesh = new Mesh(BLOCKS_PER_CHUNK * Block::VERTICES_PER_BLOCK * sizeof(unsigned int));
 	for (int i = 0; i < CHUNK_LENGTH; ++i) {
 		for (int j = 0; j < CHUNK_HEIGHT; ++j) {
 			for (int k = 0; k < CHUNK_WIDTH; ++k) {
@@ -9,6 +19,10 @@ Chunk::Chunk(int x, int y, int z) : m_posX{ x }, m_posY{ y }, m_posZ{ z }, m_upd
 			}
 		}
 	}
+}
+
+Chunk::~Chunk() {
+	delete m_mesh;
 }
 
 unsigned int Chunk::getVertexData(unsigned int* data) {
@@ -65,6 +79,20 @@ inline void Chunk::setBlockFaceData(unsigned int* data, int x, int y, int z, Blo
 	}
 }
 
-bool Chunk::updated() const {
-	return m_updated;
+void Chunk::render(const Camera* camera, float scrRatio) {
+	if (m_updated) {
+		unsigned int* vbData = new unsigned int[BLOCKS_PER_CHUNK * Block::VERTICES_PER_BLOCK];
+		unsigned int size = getVertexData(vbData);
+		m_mesh->setVertexData(vbData, size);
+		delete[] vbData;
+	}
+	float worldX = m_posX * CHUNK_LENGTH;
+	float worldY = m_posY * CHUNK_HEIGHT;
+	float worldZ = m_posZ * CHUNK_WIDTH;
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(worldX, worldY, worldZ));
+	m_shader->addUniformMat4f("u_model", model);
+	m_shader->addUniformMat4f("u_view", camera->getViewMatrix());
+	glm::mat4 projection = glm::perspective(glm::radians(camera->getZoom()), scrRatio, 0.1f, 100.0f);
+	m_shader->addUniformMat4f("u_projection", projection);
+	m_mesh->render(m_shader);
 }

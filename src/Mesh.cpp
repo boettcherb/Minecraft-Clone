@@ -3,9 +3,7 @@
 
 #include <glad/glad.h>
 
-#include <iostream>
-
-Mesh::Mesh(unsigned int vbSize) : m_shader{ nullptr }, m_vertexCount{ 0 } {
+Mesh::Mesh(unsigned int vbSize) : m_vertexCount{ 0 } {
     glGenVertexArrays(1, &m_vertexArrayID);
     glBindVertexArray(m_vertexArrayID);
     m_vertexBufferID = setVertexBuffer(vbSize);
@@ -39,20 +37,7 @@ void Mesh::setVertexData(const void* data, unsigned int size) {
     m_vertexCount = size / sizeof(unsigned int);
 }
 
-void Mesh::setShader(const ShaderProgram* shader) {
-    m_shader = shader;
-}
-
 void Mesh::render(const ShaderProgram* shader) const {
-    // if a shader is passed in as a parameter, use it over any shader that
-    // was set by setShader()
-    if (shader == nullptr) {
-        if (m_shader == nullptr) {
-            std::cerr << "Error: No shader program specified\n";
-            return;
-        }
-        shader = m_shader;
-    }
     shader->bind();
     glBindVertexArray(m_vertexArrayID);
     glDrawArrays(GL_TRIANGLES, 0, m_vertexCount);
