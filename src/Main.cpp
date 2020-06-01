@@ -132,6 +132,7 @@ int main() {
 
     glClearColor(0.2f, 0.3f, 0.8f, 1.0f);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
     // variables for deltaTime
     double previousTime = glfwGetTime();
