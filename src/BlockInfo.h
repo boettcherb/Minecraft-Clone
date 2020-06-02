@@ -10,14 +10,14 @@ namespace Block {
     inline constexpr unsigned int UINTS_PER_FACE = VERTICES_PER_FACE * UINTS_PER_VERTEX;
     inline constexpr unsigned int BYTES_PER_FACE = UINTS_PER_FACE * sizeof(unsigned int);
 
-	enum BlockType : unsigned char {
+	enum class BlockType : unsigned char {
 		AIR,
 		GRASS,
 		DIRT,
 		STONE,
 	};
 
-    enum BlockFace : unsigned char {
+    enum class BlockFace : unsigned char {
         PLUS_X,
         MINUS_X,
         PLUS_Y,

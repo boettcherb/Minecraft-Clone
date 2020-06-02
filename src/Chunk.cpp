@@ -10,12 +10,12 @@
 #include <new>
 
 Chunk::Chunk(float x, float y, float z, ShaderProgram* shader) : m_posX{ x }, m_posY{ y }, 
-m_posZ{ z }, m_shader{ shader }, m_updated{ true }, m_blocks{ Block::AIR } {
+m_posZ{ z }, m_shader{ shader }, m_updated{ true }, m_blocks{ Block::BlockType::AIR } {
 	m_mesh = new Mesh(BLOCKS_PER_CHUNK * Block::VERTICES_PER_BLOCK * sizeof(unsigned int));
 	for (int i = 0; i < CHUNK_LENGTH; ++i) {
 		for (int j = 0; j < CHUNK_HEIGHT; ++j) {
 			for (int k = 0; k < CHUNK_WIDTH; ++k) {
-				m_blocks[i][j][k] = Block::GRASS;
+				m_blocks[i][j][k] = Block::BlockType::GRASS;
 			}
 		}
 	}
@@ -31,33 +31,33 @@ unsigned int Chunk::getVertexData(unsigned int* data) {
 		for (int y = 0; y < CHUNK_HEIGHT; ++y) {
 			for (int z = 0; z < CHUNK_WIDTH; ++z) {
 				// skip if this block is air
-				if (m_blocks[x][y][z] == Block::AIR) {
+				if (m_blocks[x][y][z] == Block::BlockType::AIR) {
 					continue;
 				}
 				// check each of the six sides to see if this block is adjacent to air
 				// only draw if this block is next to air or the edge of the chunk
-				if (x == CHUNK_LENGTH - 1 || m_blocks[x + 1][y][z] == Block::AIR) {
-					setBlockFaceData(data, x, y, z, Block::PLUS_X);
+				if (x == CHUNK_LENGTH - 1 || m_blocks[x + 1][y][z] == Block::BlockType::AIR) {
+					setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_X);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (x == 0 || m_blocks[x - 1][y][z] == Block::AIR) {
-					setBlockFaceData(data, x, y, z, Block::MINUS_X);
+				if (x == 0 || m_blocks[x - 1][y][z] == Block::BlockType::AIR) {
+					setBlockFaceData(data, x, y, z, Block::BlockFace::MINUS_X);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (y == CHUNK_HEIGHT - 1 || m_blocks[x][y + 1][z] == Block::AIR) {
-					setBlockFaceData(data, x, y, z, Block::PLUS_Y);
+				if (y == CHUNK_HEIGHT - 1 || m_blocks[x][y + 1][z] == Block::BlockType::AIR) {
+					setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_Y);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (y == 0 || m_blocks[x][y - 1][z] == Block::AIR) {
-					setBlockFaceData(data, x, y, z, Block::MINUS_Y);
+				if (y == 0 || m_blocks[x][y - 1][z] == Block::BlockType::AIR) {
+					setBlockFaceData(data, x, y, z, Block::BlockFace::MINUS_Y);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (z == CHUNK_WIDTH - 1 || m_blocks[x][y][z + 1] == Block::AIR) {
-					setBlockFaceData(data, x, y, z, Block::PLUS_Z);
+				if (z == CHUNK_WIDTH - 1 || m_blocks[x][y][z + 1] == Block::BlockType::AIR) {
+					setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_Z);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (z == 0 || m_blocks[x][y][z - 1] == Block::AIR) {
-					setBlockFaceData(data, x, y, z, Block::MINUS_Z);
+				if (z == 0 || m_blocks[x][y][z - 1] == Block::BlockType::AIR) {
+					setBlockFaceData(data, x, y, z, Block::BlockFace::MINUS_Z);
 					data += Block::UINTS_PER_FACE;
 				}
 			}
