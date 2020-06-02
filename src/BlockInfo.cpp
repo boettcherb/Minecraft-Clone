@@ -15,4 +15,8 @@ namespace Block {
         return nullptr;
     }
 
+    bool isTransparent(BlockType type) {
+        return type == BlockType::AIR;
+    }
+
 }

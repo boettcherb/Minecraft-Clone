@@ -26,7 +26,8 @@ namespace Block {
         MINUS_Z,
     };
 
-    const unsigned int* getData(Block::BlockType type, Block::BlockFace face);
+    const unsigned int* getData(BlockType type, BlockFace face);
+    bool isTransparent(BlockType type);
     
     inline constexpr unsigned int GRASS_BLOCK_DATA[] = {
         //posX  posY  posZ  texX  texY

@@ -34,29 +34,29 @@ unsigned int Chunk::getVertexData(unsigned int* data) {
 				if (m_blocks[x][y][z] == Block::BlockType::AIR) {
 					continue;
 				}
-				// check each of the six sides to see if this block is adjacent to air
-				// only draw if this block is next to air or the edge of the chunk
-				if (x == CHUNK_LENGTH - 1 || m_blocks[x + 1][y][z] == Block::BlockType::AIR) {
+				// check each of the six sides to see if this block is adjacent to a transparent block
+				// only draw if this block is next to a transparent block or the edge of the chunk
+				if (x == CHUNK_LENGTH - 1 || Block::isTransparent(m_blocks[x + 1][y][z])) {
 					setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_X);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (x == 0 || m_blocks[x - 1][y][z] == Block::BlockType::AIR) {
+				if (x == 0 || Block::isTransparent(m_blocks[x - 1][y][z])) {
 					setBlockFaceData(data, x, y, z, Block::BlockFace::MINUS_X);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (y == CHUNK_HEIGHT - 1 || m_blocks[x][y + 1][z] == Block::BlockType::AIR) {
+				if (y == CHUNK_HEIGHT - 1 || Block::isTransparent(m_blocks[x][y + 1][z])) {
 					setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_Y);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (y == 0 || m_blocks[x][y - 1][z] == Block::BlockType::AIR) {
+				if (y == 0 || Block::isTransparent(m_blocks[x][y - 1][z])) {
 					setBlockFaceData(data, x, y, z, Block::BlockFace::MINUS_Y);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (z == CHUNK_WIDTH - 1 || m_blocks[x][y][z + 1] == Block::BlockType::AIR) {
+				if (z == CHUNK_WIDTH - 1 || Block::isTransparent(m_blocks[x][y][z + 1])) {
 					setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_Z);
 					data += Block::UINTS_PER_FACE;
 				}
-				if (z == 0 || m_blocks[x][y][z - 1] == Block::BlockType::AIR) {
+				if (z == 0 || Block::isTransparent(m_blocks[x][y][z - 1])) {
 					setBlockFaceData(data, x, y, z, Block::BlockFace::MINUS_Z);
 					data += Block::UINTS_PER_FACE;
 				}
