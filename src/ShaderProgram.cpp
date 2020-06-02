@@ -15,7 +15,7 @@ ShaderProgram::Shader::Shader(unsigned int id, const std::string& source)
     : m_id{ id }, m_source{ source } {}
 
 ShaderProgram::ShaderProgram(const std::string& vertexFilePath, const std::string& fragmentFilePath) {
-	m_shaderProgramID = glCreateProgram();
+    m_shaderProgramID = glCreateProgram();
     m_shaders.emplace_back(glCreateShader(GL_VERTEX_SHADER), parseShader(vertexFilePath));
     m_shaders.emplace_back(glCreateShader(GL_FRAGMENT_SHADER), parseShader(fragmentFilePath));
     compileAndLink();

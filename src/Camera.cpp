@@ -22,7 +22,7 @@ Camera::Camera(const glm::vec3& initialPosition) : m_position{ initialPosition }
 }
 
 glm::mat4 Camera::getViewMatrix() const {
-	return glm::lookAt(m_position, m_position + m_forward, m_up);
+    return glm::lookAt(m_position, m_position + m_forward, m_up);
 }
 
 glm::vec3 Camera::getCameraPosition() const {

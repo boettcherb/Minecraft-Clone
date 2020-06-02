@@ -6,19 +6,19 @@
 #include <glm/glm.hpp>
 
 class Mesh {
-	unsigned int m_vertexArrayID;
-	unsigned int m_vertexBufferID;
-	unsigned int m_vertexCount;
+    unsigned int m_vertexArrayID;
+    unsigned int m_vertexBufferID;
+    unsigned int m_vertexCount;
 
 public:
-	Mesh(unsigned int vbSize);
-	~Mesh();
+    Mesh(unsigned int vbSize);
+    ~Mesh();
 
-	void setVertexData(const void* data, unsigned int size);
-	void render(const ShaderProgram* shader) const;
+    void setVertexData(const void* data, unsigned int size);
+    void render(const ShaderProgram* shader) const;
 
 private:
-	unsigned int setVertexBuffer(unsigned int size) const;
+    unsigned int setVertexBuffer(unsigned int size) const;
 };
 
 #endif

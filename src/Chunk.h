@@ -13,21 +13,21 @@ inline const unsigned int BLOCKS_PER_CHUNK = CHUNK_LENGTH * CHUNK_HEIGHT * CHUNK
 
 class Chunk {
 
-	const float m_posX, m_posY, m_posZ;
-	Block::BlockType m_blocks[CHUNK_LENGTH][CHUNK_WIDTH][CHUNK_HEIGHT];
-	Mesh* m_mesh;
-	ShaderProgram* m_shader;
-	bool m_updated;
+    const float m_posX, m_posY, m_posZ;
+    Block::BlockType m_blocks[CHUNK_LENGTH][CHUNK_WIDTH][CHUNK_HEIGHT];
+    Mesh* m_mesh;
+    ShaderProgram* m_shader;
+    bool m_updated;
 
 public:
-	Chunk(float x, float y, float z, ShaderProgram* shader);
-	~Chunk();
+    Chunk(float x, float y, float z, ShaderProgram* shader);
+    ~Chunk();
 
-	unsigned int getVertexData(unsigned int* data);
-	void render(const Camera* camera, float scrRatio);
+    unsigned int getVertexData(unsigned int* data);
+    void render(const Camera* camera, float scrRatio);
 
 private:
-	inline void setBlockFaceData(unsigned int* data, int x, int y, int z, Block::BlockFace face) const;
+    inline void setBlockFaceData(unsigned int* data, int x, int y, int z, Block::BlockFace face) const;
 };
 
 #endif
