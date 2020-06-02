@@ -9,8 +9,8 @@
 
 #include <new>
 
-Chunk::Chunk(float x, float y, float z, ShaderProgram* shader) : m_posX{ x }, m_posY{ y }, 
-m_posZ{ z }, m_shader{ shader }, m_updated{ true }, m_blocks{ Block::BlockType::AIR } {
+Chunk::Chunk(float x, float z, ShaderProgram* shader) : m_posX{ x }, m_posZ{ z }, 
+m_shader{ shader }, m_updated{ true }, m_blocks{ Block::BlockType::AIR } {
     m_mesh = new Mesh(BLOCKS_PER_CHUNK * Block::VERTICES_PER_BLOCK * sizeof(unsigned int));
     for (int i = 0; i < CHUNK_LENGTH; ++i) {
         for (int j = 0; j < CHUNK_HEIGHT; ++j) {
@@ -75,7 +75,7 @@ inline void Chunk::setBlockFaceData(unsigned int* data, int x, int y, int z, Blo
     for (unsigned int vertex = 0; vertex < Block::VERTICES_PER_FACE; ++vertex) {
         // x pos takes bits 20-24, y takes bits 15-19, z takes bits 10-14 (from the right)
         // add the relative x, y, and z positions of the block in the chunk
-        data[vertex] = blockData[vertex] + (x << 20) + (y << 15) + (z << 10);
+        data[vertex] = blockData[vertex] + (x << 24) + (y << 15) + (z << 10);
     }
 }
 
@@ -87,9 +87,8 @@ void Chunk::render(const Camera* camera, float scrRatio) {
         delete[] vbData;
     }
     float worldX = m_posX * CHUNK_LENGTH;
-    float worldY = m_posY * CHUNK_HEIGHT;
     float worldZ = m_posZ * CHUNK_WIDTH;
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(worldX, worldY, worldZ));
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(worldX, 0.0f, worldZ));
     m_shader->addUniformMat4f("u_model", model);
     m_shader->addUniformMat4f("u_view", camera->getViewMatrix());
     glm::mat4 projection = glm::perspective(glm::radians(camera->getZoom()), scrRatio, 0.1f, 100.0f);
