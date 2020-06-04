@@ -126,7 +126,7 @@ int main() {
     std::vector<Chunk*> chunks;
     for (int x = 0; x < 10; ++x) {
         for (int z = 0; z < 10; ++z) {
-            chunks.emplace_back(new Chunk(static_cast<float>(x), 0.0f, static_cast<float>(z), &shader));
+           chunks.emplace_back(new Chunk(static_cast<float>(x), static_cast<float>(z), &shader));
         }
     }
 

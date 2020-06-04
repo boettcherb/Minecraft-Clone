@@ -6,6 +6,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <FastNoise/FastNoise.h>
 
 #include <new>
 
@@ -21,10 +22,21 @@ Chunk::Chunk(float x, float z, ShaderProgram* shader) : m_posX{ x }, m_posZ{ z }
 m_shader{ shader }, m_updated{ true } {
     m_mesh = new Mesh(BLOCKS_PER_CHUNK * Block::VERTICES_PER_BLOCK * sizeof(unsigned int));
     m_blocks = new BlockArray;
-    for (int i = 0; i < CHUNK_LENGTH; ++i) {
-        for (int j = 0; j < CHUNK_HEIGHT; ++j) {
-            for (int k = 0; k < CHUNK_WIDTH; ++k) {
-                m_blocks->put(i, j, k, Block::BlockType::GRASS);
+    FastNoise noise;
+    for (int X = 0; X < CHUNK_LENGTH; ++X) {
+        for (int Z = 0; Z < CHUNK_WIDTH; ++Z) {
+            float noiseX = X + CHUNK_LENGTH * m_posX;
+            float noiseZ = Z + CHUNK_WIDTH * m_posZ;
+            int groundHeight = static_cast<int>(50.0 + (noise.GetSimplexFractal(noiseX, noiseZ) + 1.0) / 2.0 * 30.0);
+            for (int Y = 0; Y <= groundHeight - 4; ++Y) {
+                m_blocks->put(X, Y, Z, Block::BlockType::STONE);
+            }
+            m_blocks->put(X, groundHeight - 3, Z, Block::BlockType::DIRT);
+            m_blocks->put(X, groundHeight - 2, Z, Block::BlockType::DIRT);
+            m_blocks->put(X, groundHeight - 1, Z, Block::BlockType::DIRT);
+            m_blocks->put(X, groundHeight, Z, Block::BlockType::GRASS);
+            for (int Y = groundHeight + 1; Y < CHUNK_HEIGHT; ++Y) {
+                m_blocks->put(X, Y, Z, Block::BlockType::AIR);
             }
         }
     }
