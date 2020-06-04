@@ -113,7 +113,7 @@ void Chunk::render(const Camera* camera, float scrRatio) {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(worldX, 0.0f, worldZ));
     m_shader->addUniformMat4f("u_model", model);
     m_shader->addUniformMat4f("u_view", camera->getViewMatrix());
-    glm::mat4 projection = glm::perspective(glm::radians(camera->getZoom()), scrRatio, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera->getZoom()), scrRatio, 0.1f, 300.0f);
     m_shader->addUniformMat4f("u_projection", projection);
     m_mesh->render(m_shader);
 }

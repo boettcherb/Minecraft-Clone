@@ -115,7 +115,7 @@ int main() {
 
     // Set the camera object as the window's user pointer. This makes it accessible 
     // in callback functions by using glfwGetWindowUserPointer().
-    Camera camera(glm::vec3(0.5f, 0.5f, 3.0f));
+    Camera camera(glm::vec3(0.0f, 80.0f, 0.0f));
     glfwSetWindowUserPointer(window, reinterpret_cast<void*>(&camera));
 
     ShaderProgram shader("res/shaders/basic_vertex.glsl", "res/shaders/basic_fragment.glsl");
