@@ -7,14 +7,20 @@
 #include "Camera.h"
 
 inline constexpr int CHUNK_LENGTH = 16; // x
-inline constexpr int CHUNK_HEIGHT = 16; // y
+inline constexpr int CHUNK_HEIGHT = 256; // y
 inline constexpr int CHUNK_WIDTH =  16; // z
 inline const unsigned int BLOCKS_PER_CHUNK = CHUNK_LENGTH * CHUNK_HEIGHT * CHUNK_WIDTH;
 
 class Chunk {
 
+    struct BlockArray {
+        Block::BlockType m_blockArray[CHUNK_LENGTH][CHUNK_HEIGHT][CHUNK_WIDTH];
+        Block::BlockType get(int x, int y, int z) const;
+        void put(int x, int y, int z, Block::BlockType type);
+    };
+
     const float m_posX, m_posZ;
-    Block::BlockType m_blocks[CHUNK_LENGTH][CHUNK_HEIGHT][CHUNK_WIDTH];
+    BlockArray* m_blocks;
     Mesh* m_mesh;
     ShaderProgram* m_shader;
     bool m_updated;
