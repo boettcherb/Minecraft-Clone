@@ -19,8 +19,7 @@ void Chunk::BlockArray::put(int x, int y, int z, Block::BlockType type) {
 }
 
 Chunk::Chunk(float x, float z, ShaderProgram* shader) : m_posX{ x }, m_posZ{ z }, 
-m_shader{ shader }, m_updated{ true } {
-    m_mesh = new Mesh(MAX_VERTICES * sizeof(unsigned int));
+m_shader{ shader }, m_updated{ true }, m_mesh{ nullptr } {
     m_blocks = new BlockArray;
     FastNoise noise;
     for (int X = 0; X < CHUNK_LENGTH; ++X) {
@@ -103,9 +102,12 @@ inline void Chunk::setBlockFaceData(unsigned int* data, int x, int y, int z, Blo
 
 void Chunk::render(const Camera* camera, float scrRatio) {
     if (m_updated) {
-        unsigned int* vbData = new unsigned int[MAX_VERTICES];
+        unsigned int* vbData = new unsigned int[MAX_VERTICES_PER_CHUNK];
         unsigned int size = getVertexData(vbData);
-        m_mesh->setVertexData(vbData, size);
+        if (m_mesh != nullptr) {
+            delete m_mesh;
+        }
+        m_mesh = new Mesh(vbData, size);
         delete[] vbData;
     }
     float worldX = m_posX * CHUNK_LENGTH;

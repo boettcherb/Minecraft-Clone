@@ -10,7 +10,7 @@ inline constexpr unsigned int CHUNK_LENGTH = 16;  // x
 inline constexpr unsigned int CHUNK_HEIGHT = 256; // y
 inline constexpr unsigned int CHUNK_WIDTH  = 16;  // z
 inline constexpr unsigned int BLOCKS_PER_CHUNK = CHUNK_LENGTH * CHUNK_HEIGHT * CHUNK_WIDTH;
-inline constexpr unsigned int MAX_VERTICES = 35000;
+inline constexpr unsigned int MAX_VERTICES_PER_CHUNK = BLOCKS_PER_CHUNK * Block::VERTICES_PER_BLOCK;
 
 class Chunk {
 
