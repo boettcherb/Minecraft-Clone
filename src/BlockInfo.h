@@ -15,6 +15,7 @@ namespace Block {
         GRASS,
         DIRT,
         STONE,
+        NUM_BLOCK_TYPES,
     };
 
     enum class BlockFace : unsigned char {
