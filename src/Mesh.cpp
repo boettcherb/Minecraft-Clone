@@ -3,21 +3,25 @@
 
 #include <glad/glad.h>
 
-Mesh::Mesh(const void* data, unsigned int size) : m_vertexCount{ size / sizeof(unsigned int) } {
-    // create and bind vertex array
+Mesh::Mesh() : m_vertexCount{ 0 } {
     glGenVertexArrays(1, &m_vertexArrayID);
-    glBindVertexArray(m_vertexArrayID);
-
-    // create and bind vertex buffer
     glGenBuffers(1, &m_vertexBufferID);
+}
+
+void Mesh::setVertexData(unsigned int size, const void* data) {
+    // bind both buffers (vertex array first)
+    glBindVertexArray(m_vertexArrayID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferID);
 
-    // set up memory location for vertex data (don't pass in any data yet)
+    // set up memory location for vertex data and pass in the data
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 
     // tell openGL the layout of our vertex data
     glEnableVertexAttribArray(0);
     glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(unsigned int), 0);
+
+    // store the number of vertices
+    m_vertexCount = size / sizeof(unsigned int);
 }
 
 Mesh::~Mesh() {

@@ -9,9 +9,10 @@ class Mesh {
     unsigned int m_vertexCount;
 
 public:
-    Mesh(const void* data, unsigned int vbSize);
+    Mesh();
     ~Mesh();
 
+    void setVertexData(unsigned int size, const void* data);
     void render(const ShaderProgram* shader) const;
 };
 
