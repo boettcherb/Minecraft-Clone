@@ -122,10 +122,9 @@ int main() {
     Texture textureSheet("res/textures/texture_sheet.png", 0);
     shader.addTexture(&textureSheet, "u_texture");
 
-    const unsigned int MAX_VERTEX_COUNT = BLOCKS_PER_CHUNK * 36;
     std::vector<Chunk*> chunks;
-    for (int x = 0; x < 10; ++x) {
-        for (int z = 0; z < 10; ++z) {
+    for (int x = -10; x < 10; ++x) {
+        for (int z = -10; z < 10; ++z) {
            chunks.emplace_back(new Chunk(static_cast<float>(x), static_cast<float>(z), &shader));
         }
     }
@@ -150,13 +149,13 @@ int main() {
 
         float scrRatio = static_cast<float>(g_scrWidth) / g_scrHeight;
         for (Chunk* chunk : chunks) {
-            chunk->render(&camera, scrRatio);
+            chunk->render(camera.getViewMatrix(), camera.getZoom(), scrRatio);
         }
 
         // catch errors
         GLenum err;
         while ((err = glGetError()) != GL_NO_ERROR) {
-            std::cout << "Error: " << err << '\n';
+            std::cout << "OpenGL Error: " << err << '\n';
         }
 
         glfwSwapBuffers(window);
