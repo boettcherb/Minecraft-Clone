@@ -9,9 +9,6 @@
 
 #include <new>
 
-#include <iostream>
-#include "Timer.h"
-
 void Chunk::Section::render(const ShaderProgram* shader) const {
     m_mesh.render(shader);
 }
@@ -26,6 +23,9 @@ Chunk::Chunk(float x, float z, ShaderProgram* shader) : m_posX{ x }, m_posZ{ z }
         unsigned int size = getVertexData(data, section);
         if (size > 0) {
             m_sections[section]->m_mesh.setVertexData(size, data);
+        } else {
+            delete m_sections[section];
+            m_sections[section] = nullptr;
         }
         delete[] data;
     }
@@ -54,7 +54,9 @@ void Chunk::generateTerrain() {
 
 Chunk::~Chunk() {
     for (Section* section : m_sections) {
-        delete section;
+        if (section != nullptr) {
+            delete section;
+        }
     }
 }
 
@@ -76,7 +78,9 @@ void Chunk::render(glm::mat4 viewMatrix, float zoom, float scrRatio) {
 
     // render each section of the chunk
     for (const Section* section : m_sections) {
-        section->render(m_shader);
+        if (section != nullptr) {
+            section->render(m_shader);
+        }
     }
 }
 
