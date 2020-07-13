@@ -9,26 +9,14 @@
 
 #include <new>
 
-void Chunk::Section::render(const ShaderProgram* shader) const {
-    m_mesh.render(shader);
-}
-
 Chunk::Chunk(float x, float z, ShaderProgram* shader) : m_posX{ x }, m_posZ{ z }, m_shader{ shader } {
-    for (int section = 0; section < NUM_SECTIONS; ++section) {
-        m_sections[section] = new Section();
-    }
+    m_blocks = new Blocks();
     generateTerrain();
-    for (int section = 0; section < NUM_SECTIONS; ++section) {
-        unsigned int* data = new unsigned int[BLOCKS_PER_SECTION * Block::VERTICES_PER_BLOCK];
-        unsigned int size = getVertexData(data, section);
-        if (size > 0) {
-            m_sections[section]->m_mesh.setVertexData(size, data);
-        } else {
-            delete m_sections[section];
-            m_sections[section] = nullptr;
-        }
-        delete[] data;
-    }
+    unsigned int* data = new unsigned int[BLOCKS_PER_CHUNK * Block::VERTICES_PER_BLOCK];
+    unsigned int size = getVertexData(data);
+    m_mesh.setVertexData(size, data);
+    delete[] data;
+    delete m_blocks;
 }
 
 void Chunk::generateTerrain() {
@@ -53,19 +41,15 @@ void Chunk::generateTerrain() {
 }
 
 Chunk::~Chunk() {
-    for (Section* section : m_sections) {
-        if (section != nullptr) {
-            delete section;
-        }
-    }
+    //delete m_blocks;
 }
 
 void Chunk::put(int x, int y, int z, Block::BlockType block) {
-    m_sections[y / SECTION_HEIGHT]->m_blocks[x][y & 0xF][z] = block;
+    m_blocks->m_blockArray[x][y][z] = block;
 }
 
 Block::BlockType Chunk::get(int x, int y, int z) const {
-    return m_sections[y / SECTION_HEIGHT]->m_blocks[x][y & 0xF][z];
+    return m_blocks->m_blockArray[x][y][z];
 }
 
 void Chunk::render(glm::mat4 viewMatrix, float zoom, float scrRatio) {
@@ -75,28 +59,19 @@ void Chunk::render(glm::mat4 viewMatrix, float zoom, float scrRatio) {
     m_shader->addUniformMat4f("u_view", viewMatrix);
     glm::mat4 projection = glm::perspective(glm::radians(zoom), scrRatio, 0.1f, 300.0f);
     m_shader->addUniformMat4f("u_projection", projection);
-
-    // render each section of the chunk
-    for (const Section* section : m_sections) {
-        if (section != nullptr) {
-            section->render(m_shader);
-        }
-    }
+    m_mesh.render(m_shader);
 }
 
-unsigned int Chunk::getVertexData(unsigned int* data, int section) const {
+unsigned int Chunk::getVertexData(unsigned int* data) const {
     unsigned int* start = data;
     for (int x = 0; x < CHUNK_LENGTH; ++x) {
-        int minY = section * SECTION_HEIGHT;
-        int maxY = (section + 1) * SECTION_HEIGHT;
-        for (int y = minY; y < maxY; ++y) {
+        for (int y = 0; y < CHUNK_HEIGHT; ++y) {
             for (int z = 0; z < CHUNK_WIDTH; ++z) {
                 // skip if this block is air
                 if (get(x, y, z) == Block::BlockType::AIR) {
                     continue;
                 }
                 // check each of the six sides to see if this block is adjacent to a transparent block
-                // only draw if this block is next to a transparent block or the edge of the chunk
                 if (x == CHUNK_LENGTH - 1 || Block::isTransparent(get(x + 1, y, z))) {
                     setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_X);
                     data += Block::UINTS_PER_FACE;
@@ -132,7 +107,7 @@ unsigned int Chunk::getVertexData(unsigned int* data, int section) const {
 inline void Chunk::setBlockFaceData(unsigned int* data, int x, int y, int z, Block::BlockFace face) const {
     const unsigned int* blockData = Block::getData(get(x, y, z), face);
     for (unsigned int vertex = 0; vertex < Block::VERTICES_PER_FACE; ++vertex) {
-        // x pos takes bits 20-24, y takes bits 15-19, z takes bits 10-14 (from the right)
+        // x pos takes bits 24-28, y takes bits 15-23, z takes bits 10-14 (from the right)
         // add the relative x, y, and z positions of the block in the chunk
         data[vertex] = blockData[vertex] + (x << 24) + (y << 15) + (z << 10);
     }
