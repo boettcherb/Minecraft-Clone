@@ -9,8 +9,8 @@ uniform mat4 u_projection;
 
 void main() {
     // retrieve the x, y, and z positions from their place in the data
-    float xPos = float((a_data >> 24u) & 0x1Fu);
-    float yPos = float((a_data >> 15u) & 0x1FFu);
+    float xPos = float((a_data >> 23u) & 0x1Fu);
+    float yPos = float((a_data >> 15u) & 0xFFu);
     float zPos = float((a_data >> 10u) & 0x1Fu);
     gl_Position = u_projection * u_view * u_model * vec4(xPos, yPos, zPos, 1.0f);
 

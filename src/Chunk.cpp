@@ -107,8 +107,8 @@ unsigned int Chunk::getVertexData(unsigned int* data) const {
 inline void Chunk::setBlockFaceData(unsigned int* data, int x, int y, int z, Block::BlockFace face) const {
     const unsigned int* blockData = Block::getData(get(x, y, z), face);
     for (unsigned int vertex = 0; vertex < Block::VERTICES_PER_FACE; ++vertex) {
-        // x pos takes bits 24-28, y takes bits 15-23, z takes bits 10-14 (from the right)
+        // x pos takes bits 23-27, y takes bits 15-22, z takes bits 10-14 (from the right)
         // add the relative x, y, and z positions of the block in the chunk
-        data[vertex] = blockData[vertex] + (x << 24) + (y << 15) + (z << 10);
+        data[vertex] = blockData[vertex] + (x << 23) + (y << 15) + (z << 10);
     }
 }
