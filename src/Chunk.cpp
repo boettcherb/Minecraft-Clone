@@ -11,12 +11,19 @@
 
 Chunk::Chunk(float x, float z, ShaderProgram* shader) : m_posX{ x }, m_posZ{ z }, m_shader{ shader } {
     m_blocks = new Blocks();
+    m_neighbors[0] = m_neighbors[1] = m_neighbors[2] = m_neighbors[3] = nullptr;
     generateTerrain();
+}
+
+void Chunk::updateMesh() {
+    if (m_mesh != nullptr) {
+        delete m_mesh;
+    }
+    m_mesh = new Mesh();
     unsigned int* data = new unsigned int[BLOCKS_PER_CHUNK * Block::VERTICES_PER_BLOCK];
     unsigned int size = getVertexData(data);
-    m_mesh.setVertexData(size, data);
+    m_mesh->setVertexData(size, data);
     delete[] data;
-    delete m_blocks;
 }
 
 void Chunk::generateTerrain() {
@@ -41,7 +48,8 @@ void Chunk::generateTerrain() {
 }
 
 Chunk::~Chunk() {
-    //delete m_blocks;
+    delete m_mesh;
+    delete m_blocks;
 }
 
 void Chunk::put(int x, int y, int z, Block::BlockType block) {
@@ -49,7 +57,23 @@ void Chunk::put(int x, int y, int z, Block::BlockType block) {
 }
 
 Block::BlockType Chunk::get(int x, int y, int z) const {
-    return m_blocks->m_blockArray[x][y][z];
+    if (x >= 0 && y >= 0 && z >= 0 && x < CHUNK_LENGTH && y < CHUNK_HEIGHT && z < CHUNK_WIDTH) {
+        return m_blocks->m_blockArray[x][y][z];
+    }
+    if (x > CHUNK_LENGTH - 1 && m_neighbors[PLUS_X] != nullptr) {
+        return m_neighbors[PLUS_X]->get(0, y, z);
+    }
+    if (x < 0 && m_neighbors[MINUS_X] != nullptr) {
+        return m_neighbors[MINUS_X]->get(CHUNK_LENGTH - 1, y, z);
+    }
+    if (z > CHUNK_WIDTH - 1 && m_neighbors[PLUS_Z] != nullptr) {
+        return m_neighbors[PLUS_Z]->get(x, y, 0);
+    }
+    if (z < 0 && m_neighbors[MINUS_Z] != nullptr) {
+        return m_neighbors[MINUS_Z]->get(x, y, CHUNK_WIDTH - 1);
+    }
+    // default: no block
+    return Block::BlockType::AIR;
 }
 
 void Chunk::render(glm::mat4 viewMatrix, float zoom, float scrRatio) {
@@ -59,41 +83,47 @@ void Chunk::render(glm::mat4 viewMatrix, float zoom, float scrRatio) {
     m_shader->addUniformMat4f("u_view", viewMatrix);
     glm::mat4 projection = glm::perspective(glm::radians(zoom), scrRatio, 0.1f, 300.0f);
     m_shader->addUniformMat4f("u_projection", projection);
-    m_mesh.render(m_shader);
+    m_mesh->render(m_shader);
+}
+
+void Chunk::addNeighbor(Chunk* chunk, Direction direction) {
+    m_neighbors[direction] = chunk;
 }
 
 unsigned int Chunk::getVertexData(unsigned int* data) const {
+    // record the current byte address
     unsigned int* start = data;
     for (int x = 0; x < CHUNK_LENGTH; ++x) {
         for (int y = 0; y < CHUNK_HEIGHT; ++y) {
             for (int z = 0; z < CHUNK_WIDTH; ++z) {
                 // skip if this block is air
-                if (get(x, y, z) == Block::BlockType::AIR) {
+                Block::BlockType currentBlock = get(x, y, z);
+                if (currentBlock == Block::BlockType::AIR) {
                     continue;
                 }
                 // check each of the six sides to see if this block is adjacent to a transparent block
-                if (x == CHUNK_LENGTH - 1 || Block::isTransparent(get(x + 1, y, z))) {
-                    setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_X);
+                if (Block::isTransparent(get(x + 1, y, z))) {
+                    setBlockFaceData(data, x, y, z, Block::getData(currentBlock, Block::BlockFace::PLUS_X));
                     data += Block::UINTS_PER_FACE;
                 }
-                if (x == 0 || Block::isTransparent(get(x - 1, y, z))) {
-                    setBlockFaceData(data, x, y, z, Block::BlockFace::MINUS_X);
+                if (Block::isTransparent(get(x - 1, y, z))) {
+                    setBlockFaceData(data, x, y, z, Block::getData(currentBlock, Block::BlockFace::MINUS_X));
                     data += Block::UINTS_PER_FACE;
                 }
-                if (y == CHUNK_HEIGHT - 1 || Block::isTransparent(get(x, y + 1, z))) {
-                    setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_Y);
+                if (Block::isTransparent(get(x, y + 1, z))) {
+                    setBlockFaceData(data, x, y, z, Block::getData(currentBlock, Block::BlockFace::PLUS_Y));
                     data += Block::UINTS_PER_FACE;
                 }
-                if (y == 0 || Block::isTransparent(get(x, y - 1, z))) {
-                    setBlockFaceData(data, x, y, z, Block::BlockFace::MINUS_Y);
+                if (Block::isTransparent(get(x, y - 1, z))) {
+                    setBlockFaceData(data, x, y, z, Block::getData(currentBlock, Block::BlockFace::MINUS_Y));
                     data += Block::UINTS_PER_FACE;
                 }
-                if (z == CHUNK_WIDTH - 1 || Block::isTransparent(get(x, y, z + 1))) {
-                    setBlockFaceData(data, x, y, z, Block::BlockFace::PLUS_Z);
+                if (Block::isTransparent(get(x, y, z + 1))) {
+                    setBlockFaceData(data, x, y, z, Block::getData(currentBlock, Block::BlockFace::PLUS_Z));
                     data += Block::UINTS_PER_FACE;
                 }
-                if (z == 0 || Block::isTransparent(get(x, y, z - 1))) {
-                    setBlockFaceData(data, x, y, z, Block::BlockFace::MINUS_Z);
+                if (Block::isTransparent(get(x, y, z - 1))) {
+                    setBlockFaceData(data, x, y, z, Block::getData(currentBlock, Block::BlockFace::MINUS_Z));
                     data += Block::UINTS_PER_FACE;
                 }
             }
@@ -104,8 +134,7 @@ unsigned int Chunk::getVertexData(unsigned int* data) const {
     return static_cast<unsigned int>(data - start) * sizeof(unsigned int);
 }
 
-inline void Chunk::setBlockFaceData(unsigned int* data, int x, int y, int z, Block::BlockFace face) const {
-    const unsigned int* blockData = Block::getData(get(x, y, z), face);
+inline void Chunk::setBlockFaceData(unsigned int* data, int x, int y, int z, const unsigned int* blockData) const {
     for (unsigned int vertex = 0; vertex < Block::VERTICES_PER_FACE; ++vertex) {
         // x pos takes bits 23-27, y takes bits 15-22, z takes bits 10-14 (from the right)
         // add the relative x, y, and z positions of the block in the chunk

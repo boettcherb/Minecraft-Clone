@@ -122,10 +122,25 @@ int main() {
     Texture textureSheet("res/textures/texture_sheet.png", 0);
     shader.addTexture(&textureSheet, "u_texture");
 
-    std::vector<Chunk*> chunks;
-    for (int x = -10; x < 10; ++x) {
-        for (int z = -10; z < 10; ++z) {
-           chunks.emplace_back(new Chunk(static_cast<float>(x), static_cast<float>(z), &shader));
+    const int numChunksX = 20;
+    const int numChunksZ = 20;
+    Chunk* chunks[numChunksX][numChunksZ];
+    for (int x = 0; x < numChunksX; ++x) {
+        for (int z = 0; z < numChunksZ; ++z) {
+           chunks[x][z] = new Chunk(static_cast<float>(x), static_cast<float>(z), &shader);
+        }
+    }
+    for (int x = 0; x < numChunksX; ++x) {
+        for (int z = 0; z < numChunksZ; ++z) {
+            if (x > 0) chunks[x][z]->addNeighbor(chunks[x - 1][z], Chunk::MINUS_X);
+            if (z > 0) chunks[x][z]->addNeighbor(chunks[x][z - 1], Chunk::MINUS_Z);
+            if (x < numChunksX - 1) chunks[x][z]->addNeighbor(chunks[x + 1][z], Chunk::PLUS_X);
+            if (z < numChunksZ - 1) chunks[x][z]->addNeighbor(chunks[x][z + 1], Chunk::PLUS_Z);
+        }
+    }
+    for (int x = 0; x < numChunksX; ++x) {
+        for (int z = 0; z < numChunksZ; ++z) {
+            chunks[x][z]->updateMesh();
         }
     }
 
@@ -148,8 +163,10 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         float scrRatio = static_cast<float>(g_scrWidth) / g_scrHeight;
-        for (Chunk* chunk : chunks) {
-            chunk->render(camera.getViewMatrix(), camera.getZoom(), scrRatio);
+        for (int x = 0; x < numChunksX; ++x) {
+            for (int z = 0; z < numChunksZ; ++z) {
+                chunks[x][z]->render(camera.getViewMatrix(), camera.getZoom(), scrRatio);
+            }
         }
 
         // catch errors
@@ -162,10 +179,11 @@ int main() {
         glfwPollEvents();
     }
 
-    for (Chunk* chunk : chunks) {
-        delete chunk;
+    for (int x = 0; x < numChunksX; ++x) {
+        for (int z = 0; z < numChunksZ; ++z) {
+            delete chunks[x][z];
+        }
     }
-    chunks.clear();
     glfwTerminate();
     return 0;
 }
